@@ -1,6 +1,6 @@
-"""业务路由汇总：所有模块共用一套资源路由，由领域服务完成分派。"""
+"""业务路由汇总：争议定位等固定路径先注册，通用资源路由最后兜底。"""
 from __future__ import annotations
 
-from app.routers import resource
+from app.routers import dispute, resource
 
-ROUTERS = [resource]
+ROUTERS = [dispute, resource]

@@ -45,3 +45,23 @@ class DegenerateDimService(BaseModuleService):
             and r.get("是否参与聚合") == "是"
             and r.get("status") == "已生效"
         ]
+
+    # ---- 争议定位入口：退化维度页按“事实表 + 字段 + 待处理原因”定位汇总退件 ----
+    def locate_responsible_field(
+        self, fact_table: str, field_name: str, reason: str | None = None,
+    ) -> tuple[bool, str, dict[str, Any]]:
+        """只做按事实表归属过滤的定位预览，不建立轮次。"""
+        from app.services.dispute_service import dispute_service
+        return dispute_service.preview_locate(fact_table, field_name, reason)
+
+    def locate_dispute(
+        self, fact_table: str, field_name: str, reason: str | None = None,
+        reviewer: str | None = None,
+    ) -> tuple[bool, str, dict[str, Any] | None]:
+        """建立争议定位轮次并快照有效退件对应关系。"""
+        from app.services.dispute_service import dispute_service
+        return dispute_service.create_locator(fact_table, field_name, reason, reviewer)
+
+    def dispute_field_options(self, fact_table: str | None = None) -> dict[str, Any]:
+        from app.services.dispute_service import dispute_service
+        return dispute_service.field_options(fact_table)

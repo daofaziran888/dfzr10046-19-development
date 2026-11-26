@@ -81,5 +81,28 @@ npm run dev
 - 列表接口统一返回 `{ items, total, page, size }`，动作接口统一返回 `{ ok, message }`。
 - 状态流转只允许在 `app/services` 里改，路由层不做业务判断。
 
+## 争议定位与汇总退件处置
+
+退化维度页提供「争议定位筛选」（事实表 + 字段 + 待处理原因），定位单建立时快照
+“所选字段条件 → 有效退件 id 列表”的对应关系，结果同步到「汇总层派生」页的
+**汇总层处置清单**（`DisputeLocatorPanel` / `DispositionListPanel` 两个组件）。
+
+关键接口（别名路径见 `backend/app/routers/dispute.py`）：
+
+- `GET  /api/dispute/fields?fact_table=`：退化字段选项，按事实表归属过滤同名字段。
+- `GET  /api/dispute/locate?fact_table=&field=&reason=`：只预览匹配的有效退件。
+- `POST /api/dispute/locators`：建立新一轮定位单（`DL-0001…`），快照退件身份。
+- `GET  /api/dispute/locators/{编号}`：重开旧定位；退件状态已变化仍按快照 id 找回，
+  并返回 `conflict` 新旧轮次冲突报告（`can_accept` 与“回原退件单独结案”指引）。
+- `POST /api/dispute/dispositions`：提交处置，强制校验退件与事实表/字段/定位轮次归属，
+  跨事实表提交返回 `ok:false` 且 `cross_fact_table:true`。
+- `POST /api/dispute/close-separate`：绕过旧轮次、回原退件单独结案。
+- 通用资源：`/api/summary_return`（汇总退件）、`/api/dispute_locator`（定位单）。
+
+定位状态全部编码在 URL query（`locator/fact_table/field/reason`）中，可收藏为书签、
+支持浏览器前进/返回与断线恢复；处置草稿按“定位单 + 退件 id”隔离在
+`localStorage`，绝不只按字段名共享，因此两个事实表的同名字段不会互相接收处置决定。
+
+
 领域：数据工程
 子方向：数仓与数据湖

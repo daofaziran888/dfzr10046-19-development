@@ -24,6 +24,7 @@ from app.services.lineage_edge import LineageEdgeService
 from app.services.dim_publish import DimPublishService
 from app.services.model_audit import ModelAuditService
 from app.services.src_extract import SrcExtractService
+from app.services.dispute_service import SummaryReturnService, DisputeLocatorModuleService
 
 SERVICES: dict[str, BaseModuleService] = {
     "dim_entry": DimEntryService(),
@@ -48,6 +49,13 @@ SERVICES: dict[str, BaseModuleService] = {
     "dim_publish": DimPublishService(),
     "model_audit": ModelAuditService(),
     "src_extract": SrcExtractService(),
+    # 汇总退件/处置清单：主模块名 + 常见命名别名，共用同一份内存表。
+    "summary_return": SummaryReturnService(),
+    "summary_returns": SummaryReturnService(),
+    "return_order": SummaryReturnService(),
+    "dispute_case": SummaryReturnService(),
+    "dispute_locator": DisputeLocatorModuleService(),
+    "dispute": DisputeLocatorModuleService(),
 }
 
 

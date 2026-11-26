@@ -16,7 +16,9 @@ class Store:
         }
 
     def module_names(self) -> list[str]:
-        return sorted(self._tables)
+        # 只把种子登记过的业务模块对外列为模块；争议定位单/处置留痕等
+        # 运行期内部表虽然也放在 _tables 里，但不应出现在总览卡片与导航计数中。
+        return sorted(SEED_ROWS.keys())
 
     def rows(self, module: str) -> list[dict[str, Any]]:
         return self._tables.setdefault(module, [])

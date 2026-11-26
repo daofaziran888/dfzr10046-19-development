@@ -48,3 +48,26 @@ class SummaryLayerService(BaseModuleService):
         if summary_grain != declared_grain:
             return False, f"汇总粒度 {summary_grain} 与声明粒度 {declared_grain} 不一致"
         return True, f"粒度一致：{summary_grain}"
+
+    # ---- 汇总层处置清单：处置提交/单独结案委托争议定位领域服务 ----
+    def submit_disposition(
+        self,
+        return_id: Any = None,
+        decision: str | None = None,
+        fact_table: str | None = None,
+        field_name: str | None = None,
+        locator_id: Any = None,
+        reviewer: str | None = None,
+        separate: bool = False,
+        **kwargs: Any,
+    ) -> tuple[bool, str, dict[str, Any] | None]:
+        from app.services.dispute_service import dispute_service
+        return dispute_service.submit_disposition(
+            return_ref=return_id if return_id is not None else kwargs.get("id"),
+            decision=decision, reviewer=reviewer, fact_table=fact_table,
+            field_name=field_name, locator_ref=locator_id or kwargs.get("locator_ref"),
+            separate=separate,
+        )
+
+    def dispose_return(self, *args: Any, **kwargs: Any) -> tuple[bool, str, dict[str, Any] | None]:
+        return self.submit_disposition(*args, **kwargs)
